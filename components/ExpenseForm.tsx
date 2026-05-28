@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, Text } from 'react-native';
 import { Category, CATEGORIES } from '../types/expense';
+import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Card } from './Card';
 
 interface ExpenseFormProps {
   onAdd: (expense: { description: string; amount: number; category: Category }) => void;
@@ -23,98 +25,109 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <Card style={styles.container}>
+      <Text style={styles.formTitle}>Add New Expense</Text>
       <View style={styles.row}>
         <TextInput
           style={[styles.input, { flex: 2 }]}
-          placeholder="Description"
+          placeholder="What did you buy?"
           value={description}
           onChangeText={setDescription}
+          placeholderTextColor={COLORS.text.muted}
         />
         <TextInput
           style={[styles.input, { flex: 1 }]}
-          placeholder="Amount"
+          placeholder="$ 0.00"
           value={amount}
           onChangeText={setAmount}
           keyboardType="numeric"
+          placeholderTextColor={COLORS.text.muted}
         />
       </View>
       <View style={styles.row}>
-        <View style={styles.categoryContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryPicker}>
           {CATEGORIES.map((cat) => (
             <TouchableOpacity
               key={cat}
               onPress={() => setCategory(cat)}
-              style={[styles.categoryBtn, category === cat && styles.selectedCategoryBtn]}
+              style={[
+                styles.categoryBtn,
+                category === cat && { backgroundColor: COLORS.categories[cat as keyof typeof COLORS.categories] }
+              ]}
             >
-              <Text style={[styles.categoryBtnText, category === cat && styles.selectedCategoryBtnText]}>
-                {cat[0]}
+              <Text style={[styles.categoryBtnText, category === cat && styles.selectedCategoryText]}>
+                {cat}
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
         <TouchableOpacity style={styles.addBtn} onPress={handleSubmit}>
           <Text style={styles.addBtnText}>ADD</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    marginBottom: SPACING.md,
+    padding: SPACING.md,
+  },
+  formTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.text.secondary,
+    letterSpacing: 1,
+    marginBottom: SPACING.sm,
   },
   row: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
+    alignItems: 'center',
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    padding: 8,
+    backgroundColor: '#F9F9F9',
+    borderRadius: BORDER_RADIUS.md,
+    padding: 12,
     fontSize: 14,
-    backgroundColor: '#fff',
-    marginRight: 4,
+    color: COLORS.text.primary,
+    marginRight: SPACING.xs,
   },
-  categoryContainer: {
-    flexDirection: 'row',
-    flex: 2,
-    alignItems: 'center',
+  categoryPicker: {
+    flex: 1,
+    marginRight: SPACING.sm,
   },
   categoryBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: BORDER_RADIUS.sm,
+    backgroundColor: '#F9F9F9',
     marginRight: 6,
   },
-  selectedCategoryBtn: {
-    backgroundColor: '#212121',
-    borderColor: '#212121',
-  },
   categoryBtnText: {
-    fontSize: 12,
-    color: '#757575',
+    fontSize: 11,
+    color: COLORS.text.secondary,
+    fontWeight: '600',
   },
-  selectedCategoryBtnText: {
-    color: '#fff',
+  selectedCategoryText: {
+    color: COLORS.text.primary,
   },
   addBtn: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: COLORS.text.primary,
+    borderRadius: BORDER_RADIUS.md,
     paddingHorizontal: 20,
+    paddingVertical: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
   },
   addBtnText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: COLORS.white,
+    fontWeight: '700',
     fontSize: 12,
   },
 });
+
+import { ScrollView } from 'react-native-gesture-handler'; // Fixed missing import in thought
+import { ScrollView as RNScrollView } from 'react-native';
+const ScrollView = RNScrollView;

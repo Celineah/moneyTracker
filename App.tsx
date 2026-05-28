@@ -5,7 +5,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ExpenseProvider, useExpenses } from './context/ExpenseContext';
 import HomeScreen from './screens/HomeScreen';
 import StatisticsScreen from './screens/StatisticsScreen';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { COLORS, BORDER_RADIUS, SHADOWS } from './constants/theme';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,18 +16,19 @@ function AppContent() {
   if (!isLoaded) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text style={styles.loadingText}>Loading your finances...</Text>
       </SafeAreaView>
     );
   }
 
   return (
     <NavigationContainer>
+      <StatusBar barStyle="dark-content" />
       <Tab.Navigator
         screenOptions={{
           tabBarStyle: styles.tabBar,
-          tabBarActiveTintColor: '#212121',
-          tabBarInactiveTintColor: '#bdbdbd',
+          tabBarActiveTintColor: COLORS.text.primary,
+          tabBarInactiveTintColor: COLORS.text.muted,
           tabBarLabelStyle: styles.tabBarLabel,
           headerShown: false,
         }}
@@ -65,19 +67,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.background,
   },
   loadingText: {
     fontSize: 14,
-    color: '#757575',
+    color: COLORS.text.secondary,
     letterSpacing: 1,
+    fontWeight: '300',
   },
   tabBar: {
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingBottom: 5,
-    paddingTop: 5,
-    height: 60,
+    backgroundColor: COLORS.white,
+    borderTopWidth: 0,
+    height: 70,
+    paddingBottom: 10,
+    paddingTop: 10,
+    ...SHADOWS.medium,
+    borderTopLeftRadius: BORDER_RADIUS.xl,
+    borderTopRightRadius: BORDER_RADIUS.xl,
+    position: 'absolute',
   },
   tabBarLabel: {
     fontSize: 10,

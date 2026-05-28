@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Expense } from '../types/expense';
+import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Card } from './Card';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -9,37 +11,34 @@ interface ExpenseListProps {
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDelete }) => {
   const renderItem = ({ item }: { item: Expense }) => (
-    <View style={styles.row}>
-      <View style={[styles.cell, { flex: 2 }]}>
-        <Text style={styles.cellText}>{item.description}</Text>
+    <Card style={styles.itemCard}>
+      <View style={[styles.categoryIndicator, { backgroundColor: COLORS.categories[item.category as keyof typeof COLORS.categories] }]} />
+      <View style={styles.itemContent}>
+        <View style={styles.itemMain}>
+          <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.categoryLabel}>{item.category.toUpperCase()}</Text>
+        </View>
+        <View style={styles.itemRight}>
+          <Text style={styles.amount}>${item.amount.toFixed(2)}</Text>
+          <TouchableOpacity onPress={() => onDelete(item.id)} style={styles.deleteBtn}>
+            <Text style={styles.deleteBtnText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={[styles.cell, { flex: 1.2 }]}>
-        <Text style={styles.categoryBadge}>{item.category.toUpperCase()}</Text>
-      </View>
-      <View style={[styles.cell, { flex: 1 }]}>
-        <Text style={[styles.cellText, styles.amountText]}>${item.amount.toFixed(2)}</Text>
-      </View>
-      <TouchableOpacity onPress={() => onDelete(item.id)} style={styles.deleteBtn}>
-        <Text style={styles.deleteBtnText}>×</Text>
-      </TouchableOpacity>
-    </View>
+    </Card>
   );
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <Text style={[styles.headerCell, { flex: 2 }]}>DESCRIPTION</Text>
-        <Text style={[styles.headerCell, { flex: 1.2 }]}>CATEGORY</Text>
-        <Text style={[styles.headerCell, { flex: 1 }]}>AMOUNT</Text>
-        <View style={{ width: 30 }} />
-      </View>
+      <Text style={styles.sectionTitle}>Recent Transactions</Text>
       <FlatList
         data={expenses}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
+        contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No expenses found.</Text>
+            <Text style={styles.emptyText}>No expenses yet. Start by adding one!</Text>
           </View>
         }
       />
@@ -50,67 +49,75 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDelete }) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 8,
   },
-  headerRow: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#212121',
-    backgroundColor: '#fff',
-  },
-  headerCell: {
-    fontSize: 10,
+  sectionTitle: {
+    fontSize: 12,
     fontWeight: '700',
-    color: '#212121',
-    letterSpacing: 0.5,
+    color: COLORS.text.secondary,
+    letterSpacing: 1,
+    marginBottom: SPACING.md,
+    marginTop: SPACING.sm,
   },
-  row: {
+  listContent: {
+    paddingBottom: SPACING.xl,
+  },
+  itemCard: {
     flexDirection: 'row',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eeeeee',
-    alignItems: 'center',
-  },
-  cell: {
-    justifyContent: 'center',
-  },
-  cellText: {
-    fontSize: 13,
-    color: '#424242',
-  },
-  amountText: {
-    fontWeight: '500',
-    textAlign: 'right',
-    paddingRight: 8,
-  },
-  categoryBadge: {
-    fontSize: 9,
-    color: '#757575',
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: 2,
-    alignSelf: 'flex-start',
+    marginBottom: SPACING.sm,
+    padding: 0,
     overflow: 'hidden',
   },
-  deleteBtn: {
-    width: 30,
+  categoryIndicator: {
+    width: 6,
+    height: '100%',
+  },
+  itemContent: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: SPACING.md,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+  },
+  itemMain: {
+    flex: 1,
+  },
+  description: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.text.primary,
+    marginBottom: 4,
+  },
+  categoryLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: COLORS.text.muted,
+    letterSpacing: 0.5,
+  },
+  itemRight: {
+    alignItems: 'flex-end',
+  },
+  amount: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.text.primary,
+    marginBottom: 4,
+  },
+  deleteBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   deleteBtnText: {
-    fontSize: 20,
-    color: '#bdbdbd',
-    fontWeight: '300',
+    fontSize: 10,
+    color: '#FF5252',
+    fontWeight: '600',
   },
   emptyContainer: {
-    paddingVertical: 40,
+    paddingVertical: 60,
     alignItems: 'center',
   },
   emptyText: {
     fontSize: 14,
-    color: '#9e9e9e',
-    fontStyle: 'italic',
+    color: COLORS.text.muted,
+    textAlign: 'center',
   },
 });

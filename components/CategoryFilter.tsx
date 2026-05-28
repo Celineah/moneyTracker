@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Category, CATEGORIES } from '../types/expense';
+import { COLORS, SPACING, BORDER_RADIUS } from '../constants/theme';
 
 interface CategoryFilterProps {
   selectedCategory: Category | 'All';
@@ -10,9 +11,13 @@ interface CategoryFilterProps {
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onSelectCategory }) => {
   return (
     <View style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <TouchableOpacity
-          style={[styles.chip, selectedCategory === 'All' && styles.selectedChip]}
+          style={[
+            styles.chip,
+            selectedCategory === 'All' && styles.selectedChip,
+            { backgroundColor: selectedCategory === 'All' ? COLORS.text.primary : '#F0F0F0' }
+          ]}
           onPress={() => onSelectCategory('All')}
         >
           <Text style={[styles.chipText, selectedCategory === 'All' && styles.selectedChipText]}>ALL</Text>
@@ -20,7 +25,11 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory
         {CATEGORIES.map((cat) => (
           <TouchableOpacity
             key={cat}
-            style={[styles.chip, selectedCategory === cat && styles.selectedChip]}
+            style={[
+              styles.chip,
+              selectedCategory === cat && styles.selectedChip,
+              { backgroundColor: selectedCategory === cat ? COLORS.categories[cat as keyof typeof COLORS.categories] : '#F0F0F0' }
+            ]}
             onPress={() => onSelectCategory(cat)}
           >
             <Text style={[styles.chipText, selectedCategory === cat && styles.selectedChipText]}>
@@ -35,27 +44,27 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 12,
+    paddingVertical: SPACING.md,
+  },
+  scrollContent: {
+    paddingRight: SPACING.md,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-    backgroundColor: '#eeeeee',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: BORDER_RADIUS.xl,
     marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
   },
   selectedChip: {
-    backgroundColor: '#212121',
-    borderColor: '#212121',
+    // Dynamic background set in inline style
   },
   chipText: {
     fontSize: 11,
-    color: '#616161',
-    fontWeight: '500',
+    color: COLORS.text.secondary,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   selectedChipText: {
-    color: '#ffffff',
+    color: COLORS.text.primary,
   },
 });

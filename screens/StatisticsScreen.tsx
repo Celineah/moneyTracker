@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { useExpenses } from '../context/ExpenseContext';
 import { CATEGORIES } from '../types/expense';
+import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { Card } from '../components/Card';
 
 export default function StatisticsScreen() {
   const { expenses } = useExpenses();
@@ -15,8 +17,8 @@ export default function StatisticsScreen() {
       return {
         name: category,
         population: total,
-        color: getCategoryColor(category),
-        legendFontColor: '#7F7F7F',
+        color: COLORS.categories[category as keyof typeof COLORS.categories],
+        legendFontColor: COLORS.text.secondary,
         legendFontSize: 12,
       };
     });
@@ -25,42 +27,43 @@ export default function StatisticsScreen() {
   }, [expenses]);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Spending Statistics</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      <Text style={styles.title}>Analytics</Text>
       
-      {chartData.length > 0 ? (
-        <View style={styles.chartContainer}>
+      <Card style={styles.chartCard}>
+        <Text style={styles.cardTitle}>SPENDING BY CATEGORY</Text>
+        {chartData.length > 0 ? (
           <PieChart
             data={chartData}
-            width={Dimensions.get('window').width - 32}
-            height={220}
+            width={Dimensions.get('window').width - 64}
+            height={200}
             chartConfig={{
               color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             }}
             accessor="population"
             backgroundColor="transparent"
-            paddingLeft="15"
+            paddingLeft="0"
             absolute
           />
-        </View>
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No data available for chart.</Text>
-        </View>
-      )}
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No data to visualize yet.</Text>
+          </View>
+        )}
+      </Card>
 
       <View style={styles.breakdownContainer}>
-        <Text style={styles.subtitle}>CATEGORY BREAKDOWN</Text>
+        <Text style={styles.sectionTitle}>DETAILED BREAKDOWN</Text>
         {CATEGORIES.map((category) => {
           const total = expenses
             .filter((e) => e.category === category)
             .reduce((sum, e) => sum + e.amount, 0);
           return (
-            <View key={category} style={styles.breakdownRow}>
-              <View style={[styles.colorDot, { backgroundColor: getCategoryColor(category) }]} />
+            <Card key={category} style={styles.breakdownCard}>
+              <View style={[styles.colorDot, { backgroundColor: COLORS.categories[category as keyof typeof COLORS.categories] }]} />
               <Text style={styles.categoryName}>{category}</Text>
               <Text style={styles.categoryAmount}>${total.toFixed(2)}</Text>
-            </View>
+            </Card>
           );
         })}
       </View>
@@ -68,83 +71,75 @@ export default function StatisticsScreen() {
   );
 }
 
-const getCategoryColor = (category: string) => {
-  switch (category) {
-    case 'Roupa': return '#FF6384';
-    case 'Alimento': return '#36A2EB';
-    case 'Transporte': return '#FFCE56';
-    case 'Lazer': return '#4BC0C0';
-    case 'Contas': return '#9966FF';
-    default: return '#C9CBCF';
-  }
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  scrollContent: {
     paddingHorizontal: 16,
-    backgroundColor: '#ffffff',
+    paddingBottom: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '300',
-    letterSpacing: 1.2,
-    color: '#212121',
+    color: COLORS.text.primary,
     marginTop: 20,
     marginBottom: 20,
   },
-  chartContainer: {
+  chartCard: {
+    marginBottom: SPACING.lg,
+    padding: SPACING.md,
     alignItems: 'center',
-    marginBottom: 30,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    paddingVertical: 10,
+  },
+  cardTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: COLORS.text.muted,
+    letterSpacing: 1,
+    marginBottom: SPACING.md,
+    alignSelf: 'flex-start',
   },
   emptyContainer: {
-    height: 200,
+    height: 150,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    marginBottom: 30,
   },
   emptyText: {
-    color: '#9e9e9e',
+    color: COLORS.text.muted,
     fontStyle: 'italic',
   },
-  subtitle: {
+  sectionTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#212121',
+    color: COLORS.text.secondary,
     letterSpacing: 1,
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   breakdownContainer: {
-    marginBottom: 40,
+    marginTop: SPACING.md,
   },
-  breakdownRow: {
+  breakdownCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f5f5f5',
+    padding: 16,
+    marginBottom: SPACING.sm,
   },
   colorDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 10,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 12,
   },
   categoryName: {
     flex: 1,
     fontSize: 14,
-    color: '#424242',
+    fontWeight: '600',
+    color: COLORS.text.primary,
   },
   categoryAmount: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#212121',
+    fontWeight: '700',
+    color: COLORS.text.primary,
   },
 });

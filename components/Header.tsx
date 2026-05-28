@@ -1,17 +1,30 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 interface HeaderProps {
   totalSpent: number;
+  remainingBalance: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ totalSpent }) => {
+export const Header: React.FC<HeaderProps> = ({ totalSpent, remainingBalance }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Expense Tracker</Text>
-      <View style={styles.summaryBox}>
-        <Text style={styles.summaryLabel}>TOTAL EXPENSES</Text>
-        <Text style={styles.summaryValue}>${totalSpent.toFixed(2)}</Text>
+      <Text style={styles.welcomeText}>Hello,</Text>
+      <Text style={styles.appTitle}>Finance Dashboard</Text>
+      
+      <View style={styles.heroCard}>
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>TOTAL EXPENSES</Text>
+          <Text style={styles.value}>${totalSpent.toFixed(2)}</Text>
+        </View>
+        <View style={styles.divider} />
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>REMAINING</Text>
+          <Text style={[styles.value, remainingBalance < 0 && styles.negativeValue]}>
+            ${remainingBalance.toFixed(2)}
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -19,30 +32,50 @@ export const Header: React.FC<HeaderProps> = ({ totalSpent }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    paddingVertical: SPACING.lg,
+  },
+  welcomeText: {
+    fontSize: 14,
+    color: COLORS.text.secondary,
+    fontWeight: '400',
+  },
+  appTitle: {
+    fontSize: 28,
+    fontWeight: '300',
+    color: COLORS.text.primary,
+    marginBottom: SPACING.lg,
+  },
+  heroCard: {
+    backgroundColor: COLORS.accent,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    ...SHADOWS.medium,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '300',
-    letterSpacing: 1.2,
-    color: '#212121',
+  summaryItem: {
+    flex: 1,
+    alignItems: 'center',
   },
-  summaryBox: {
-    alignItems: 'flex-end',
+  divider: {
+    width: 1,
+    height: '100%',
+    backgroundColor: 'rgba(255,255,255,0.3)',
   },
-  summaryLabel: {
+  label: {
     fontSize: 10,
-    color: '#757575',
-    fontWeight: '600',
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.7)',
+    letterSpacing: 1,
+    marginBottom: 4,
   },
-  summaryValue: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#d32f2f',
+  value: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: COLORS.white,
+  },
+  negativeValue: {
+    color: '#FFCDD2',
   },
 });
