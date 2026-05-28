@@ -1,15 +1,34 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, StatusBar, Text } from 'react-native';
 import { Expense, Category } from './types/expense';
 import { Header } from './components/Header';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ExpenseForm } from './components/ExpenseForm';
 import { ExpenseList } from './components/ExpenseList';
+import { saveExpenses, loadExpenses } from './utils/storage';
 
 export default function App() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
   const [initialBudget] = useState(5000);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load expenses on startup
+  useEffect(() => {
+    const init = async () => {
+      const storedExpenses = await loadExpenses();
+      setExpenses(storedExpenses);
+      setIsLoaded(true);
+    };
+    init();
+  }, []);
+
+  // Save expenses whenever they change
+  useEffect(() => {
+    if (isLoaded) {
+      saveExpenses(expenses);
+    }
+  }, [expenses, isLoaded]);
 
   const filteredExpenses = useMemo(() => {
     if (selectedCategory === 'All') return expenses;
@@ -39,6 +58,16 @@ export default function App() {
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   };
 
+  if (!isLoaded) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
@@ -67,6 +96,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#757575',
+    letterSpacing: 1,
   },
   footer: {
     paddingVertical: 20,
