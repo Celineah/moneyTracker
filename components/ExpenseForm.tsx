@@ -128,6 +128,6 @@ const styles = StyleSheet.create({
   },
 });
 
-import { ScrollView } from 'react-native-gesture-handler'; // Fixed missing import in thought
+ // Fixed missing import in thought
 import { ScrollView as RNScrollView } from 'react-native';
 const ScrollView = RNScrollView;
